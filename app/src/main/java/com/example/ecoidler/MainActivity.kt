@@ -10,6 +10,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
+import com.example.ecoidler.ui.DataViewModel
+import com.example.ecoidler.utils.InjectorUtils
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -19,12 +22,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var toggle: ActionBarDrawerToggle // this way no null checks
 
-    // data model
-    private var woodGatherer = 0
-    private var wood = 0
+    private lateinit var viewModel: DataViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val factory = InjectorUtils.provideQuotesViewModelFactory()
+        viewModel = ViewModelProvider(this, factory)[DataViewModel::class.java]
+
 
         // Navigation drawer
         val drawer: DrawerLayout = findViewById(R.id.drawer)
@@ -36,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         woodButton = findViewById(R.id.AddWoodGatherer)
         woodStats = findViewById(R.id.woodStats)
         woodStats.isEnabled = false
-        woodButton.setOnClickListener { addWoodGatherer() }
+        woodButton.setOnClickListener { viewModel.addWoodGatherer() }
 
         mainHandler = Handler(Looper.getMainLooper())
 
@@ -82,10 +88,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateStats() {
         // update model
-        wood += woodGatherer
+        viewModel.addWood()
 
         // update view
-        woodStats.text = "Wood gatherers: $woodGatherer | Wood: $wood"
+        woodStats.text =
+            "Wood gatherers: ${viewModel.getWoodGatherers().value} | Wood: ${viewModel.getWood().value}"
     }
 
     override fun onResume() {
@@ -94,9 +101,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addWoodGatherer() {
+        viewModel.addWoodGatherer()
 
-        woodGatherer += 1
-        if (woodGatherer > 0 && !woodStats.isEnabled) {
+        if ((viewModel.getWoodGatherers().value ?: 0) > 0 && !woodStats.isEnabled) {
             woodStats.isEnabled = true
         }
     }
