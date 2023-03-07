@@ -19,9 +19,9 @@ import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainHandler: Handler
-    private lateinit var woodStats: TextView
-
     private lateinit var toggle: ActionBarDrawerToggle // this way no null checks
+
+    private lateinit var woodStats: TextView
     private lateinit var viewModel: DataViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,20 +53,15 @@ class MainActivity : AppCompatActivity() {
         mainHandler = Handler(Looper.getMainLooper())
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         val navView: NavigationView = findViewById(R.id.navView)
         navView.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.miItem1 -> Toast.makeText(
-                    applicationContext,
-                    "Clicked Item 1",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.miItem2 -> Toast.makeText(
-                    applicationContext,
-                    "Clicked Item 2",
-                    Toast.LENGTH_SHORT
-                ).show()
+                R.id.miItem1 -> {}
+                R.id.miItem2 -> {
+                    val intent = Intent(this@MainActivity, ScoreActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                }
                 R.id.miItem3 -> Toast.makeText(
                     applicationContext,
                     "Clicked Item 3",

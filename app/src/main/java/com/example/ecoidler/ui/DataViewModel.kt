@@ -23,4 +23,8 @@ class DataViewModel(private val repository: Repository) : ViewModel() {
     fun lost() = (getTrees().value ?: 0) < 0
 
     fun reset() = repository.reset()
+
+    fun score(): Int {
+        return (getTrees().value ?:0) * 100 + (getWood().value ?:0)
+    }
 }

@@ -9,4 +9,5 @@
     <string name="planet_line">"Trees: %d"</string>
     <string name="loosing_line">No more trees. Planet lost. You lost.</string>
     <string name="restart">Restart</string>
+    <string name="score">You have %d points.</string>
 </resources>
