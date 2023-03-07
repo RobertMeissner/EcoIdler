@@ -13,12 +13,22 @@ class FakeDao {
 
     private var woodData = 0
     private val wood = MutableLiveData<Int>()
-    private var trees = 100
+    private var trees = 1
     private val liveTrees = MutableLiveData<Int>()
 
-    init {
+    fun reset() {
+        woodGatherer = 0
+        woodGatherers.value = woodGatherer
+        woodChopper = 0
+        woodChoppers.value = woodChopper
+        woodData = 0
         wood.value = woodData
+        trees = 1
         liveTrees.value = trees
+    }
+
+    init {
+        reset()
     }
 
     fun addWoodGatherer() {

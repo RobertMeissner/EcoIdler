@@ -1,5 +1,6 @@
 package com.example.ecoidler
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -109,7 +110,12 @@ class MainActivity : AppCompatActivity() {
             viewModel.getTrees().value
         )
 
-        findViewById<TextView>(R.id.loosing_line).isVisible = viewModel.lost()
+        if (viewModel.lost()) {
+            val intent = Intent(this@MainActivity, LostActivity::class.java)
+            viewModel.reset()
+            finish()
+            startActivity(intent)
+        }
 
 
     }
@@ -130,7 +136,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enableStatsView() {
-        woodStats.isVisible = viewModel.getWoodGatherers().value !== null
+        woodStats.isVisible =
+            viewModel.getWoodGatherers().value !== null || viewModel.getWoodChoppers().value !== null
 
         if ((viewModel.getWoodGatherers().value ?: 0) > 0 && !woodStats.isEnabled) {
             woodStats.isEnabled = true

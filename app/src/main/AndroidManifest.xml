@@ -12,6 +12,9 @@
         android:theme="@style/Theme.EcoIdler"
         tools:targetApi="31">
         <activity
+            android:name=".LostActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

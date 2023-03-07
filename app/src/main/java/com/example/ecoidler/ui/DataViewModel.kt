@@ -21,4 +21,6 @@ class DataViewModel(private val repository: Repository) : ViewModel() {
     fun cutTree(number: Int) = repository.cutTree(number)
     fun getTrees() = repository.getTrees()
     fun lost() = (getTrees().value ?: 0) < 0
+
+    fun reset() = repository.reset()
 }

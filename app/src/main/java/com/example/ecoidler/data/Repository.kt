@@ -15,6 +15,8 @@ class Repository private constructor(private val dao: FakeDao) {
     fun cutTree(number: Int) = dao.cutTree(number)
     fun getTrees() = dao.getTrees()
 
+    fun reset() = dao.reset()
+
     companion object {
         // volatile: all threads have the same data immediately
         @Volatile
