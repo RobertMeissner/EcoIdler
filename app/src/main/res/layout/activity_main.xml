@@ -9,29 +9,57 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="300dp">
 
         <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="409dp"
-            android:layout_height="729dp"
+            android:layout_height="0dp"
             android:layout_marginStart="1dp"
-            android:layout_marginTop="1dp"
+            android:layout_marginBottom="104dp"
             android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/loosing_line"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <Button
                 android:id="@+id/AddWoodGatherer"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/add_wood_gatherer" />
 
+            <Button
+                android:id="@+id/addWoodChoppers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_wood_chopper" />
+
             <TextView
                 android:id="@+id/woodStats"
-                android:layout_width="199dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/textview" />
+                android:text="" />
+
+            <TextView
+                android:id="@+id/planetStats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="" />
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/loosing_line"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="312dp"
+            android:text="@string/loosing_line"
+            android:textSize="60sp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

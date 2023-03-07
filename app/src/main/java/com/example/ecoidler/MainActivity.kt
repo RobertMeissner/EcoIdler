@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.ecoidler.ui.DataViewModel
@@ -17,17 +18,19 @@ import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainHandler: Handler
-    lateinit var woodButton: Button
     private lateinit var woodStats: TextView
 
     private lateinit var toggle: ActionBarDrawerToggle // this way no null checks
-
     private lateinit var viewModel: DataViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initializeUI()
+    }
+
+    private fun initializeUI() {
         val factory = InjectorUtils.provideQuotesViewModelFactory()
         viewModel = ViewModelProvider(this, factory)[DataViewModel::class.java]
 
@@ -39,10 +42,12 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
 
         // set UI elements
-        woodButton = findViewById(R.id.AddWoodGatherer)
         woodStats = findViewById(R.id.woodStats)
-        woodStats.isEnabled = false
-        woodButton.setOnClickListener { viewModel.addWoodGatherer() }
+        enableStatsView()
+
+        val woodButton = findViewById<Button>(R.id.AddWoodGatherer)
+        woodButton.setOnClickListener { addWoodGatherer() }
+        findViewById<Button>(R.id.addWoodChoppers).setOnClickListener { addWoodChoppers() }
 
         mainHandler = Handler(Looper.getMainLooper())
 
@@ -81,18 +86,32 @@ class MainActivity : AppCompatActivity() {
 
     private val updateTextTask = object : Runnable {
         override fun run() {
+            tickData()
             updateStats()
             mainHandler.postDelayed(this, 1000)
         }
     }
 
-    private fun updateStats() {
-        // update model
+    private fun tickData() {
         viewModel.addWood()
+    }
 
+    private fun updateStats() {
         // update view
-        woodStats.text =
-            "Wood gatherers: ${viewModel.getWoodGatherers().value} | Wood: ${viewModel.getWood().value}"
+        woodStats.text = getString(
+            R.string.stats_line,
+            viewModel.getWoodGatherers().value,
+            viewModel.getWoodChoppers().value,
+            viewModel.getWood().value
+        )
+        findViewById<TextView>(R.id.planetStats).text = getString(
+            R.string.planet_line,
+            viewModel.getTrees().value
+        )
+
+        findViewById<TextView>(R.id.loosing_line).isVisible = viewModel.lost()
+
+
     }
 
     override fun onResume() {
@@ -102,9 +121,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun addWoodGatherer() {
         viewModel.addWoodGatherer()
+        enableStatsView()
+    }
+
+    private fun addWoodChoppers() {
+        viewModel.addWoodChoppers()
+        enableStatsView()
+    }
+
+    private fun enableStatsView() {
+        woodStats.isVisible = viewModel.getWoodGatherers().value !== null
 
         if ((viewModel.getWoodGatherers().value ?: 0) > 0 && !woodStats.isEnabled) {
             woodStats.isEnabled = true
         }
+
+        updateStats()
     }
 }

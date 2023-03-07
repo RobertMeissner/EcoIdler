@@ -5,10 +5,20 @@ import com.example.ecoidler.data.Repository
 
 class DataViewModel(private val repository: Repository) : ViewModel() {
     fun addWood() {
-        repository.addWood(repository.getWoodGatherers().value ?: 0)
+        val wood =
+            (repository.getWoodGatherers().value ?: 0) + 10 * (repository.getWoodChoppers().value
+                ?: 0)
+        repository.addWood(wood)
+
+        cutTree(repository.getWoodChoppers().value ?: 0)
     }
 
     fun addWoodGatherer() = repository.addWoodGatherer()
+    fun addWoodChoppers() = repository.addWoodChoppers()
     fun getWood() = repository.getWood()
     fun getWoodGatherers() = repository.getWoodGatherers()
+    fun getWoodChoppers() = repository.getWoodChoppers()
+    fun cutTree(number: Int) = repository.cutTree(number)
+    fun getTrees() = repository.getTrees()
+    fun lost() = (getTrees().value ?: 0) < 0
 }
