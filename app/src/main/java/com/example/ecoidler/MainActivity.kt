@@ -52,24 +52,6 @@ class MainActivity : AppCompatActivity() {
 
         mainHandler = Handler(Looper.getMainLooper())
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val navView: NavigationView = findViewById(R.id.navView)
-        navView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.miItem1 -> {}
-                R.id.miItem2 -> {
-                    val intent = Intent(this@MainActivity, ScoreActivity::class.java)
-                    finish()
-                    startActivity(intent)
-                }
-                R.id.miItem3 -> Toast.makeText(
-                    applicationContext,
-                    "Clicked Item 3",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            true
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -106,10 +88,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         if (viewModel.lost()) {
-            val intent = Intent(this@MainActivity, LostActivity::class.java)
-            viewModel.reset()
-            finish()
-            startActivity(intent)
+            print("Lost")
         }
 
 
