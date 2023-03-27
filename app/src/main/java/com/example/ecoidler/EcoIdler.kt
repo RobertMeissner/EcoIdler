@@ -17,8 +17,7 @@ import com.example.ecoidler.ui.theme.EcoIdlerTheme
 @Composable
 fun EcoIdler() {
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background
+        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
     ) {
         Column {
 
@@ -40,9 +39,7 @@ fun MaterialCounter(material_name: String, onClick: () -> Unit) {
 
 @Preview(name = "Light Mode")
 @Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showBackground = true,
-    name = "Dark Mode"
+    uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Dark Mode"
 )
 @Composable
 fun MaterialCounterPreview() {
@@ -83,15 +80,13 @@ fun MaterialStat(name: String, amount: Number) {
 
 @Preview(name = "Light Mode")
 @Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showBackground = true,
-    name = "Dark Mode"
+    uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Dark Mode"
 )
 @Composable
 fun DefaultPreview() {
     EcoIdlerTheme {
         Surface {
-            Column() {
+            Column {
 
                 Greeting("Android")
                 val materials = listOf<MaterialStats>(
