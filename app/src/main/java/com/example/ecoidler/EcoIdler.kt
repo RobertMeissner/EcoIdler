@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -24,10 +25,29 @@ fun EcoIdler() {
             Greeting("EcoIdler")
             val materials = listOf<MaterialStats>(MaterialStats(name = "wood", amount = 10))
             Stats(stats = materials)
+            MaterialCounter(material_name = "Wood", onClick = { })
+            MaterialCounter(material_name = "Stone", onClick = { })
         }
     }
 }
 
+@Composable
+fun MaterialCounter(material_name: String, onClick: () -> Unit) {
+    Button(onClick = onClick) {
+        Text("Add $material_name gatherer")
+    }
+}
+
+@Preview(name = "Light Mode")
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    name = "Dark Mode"
+)
+@Composable
+fun MaterialCounterPreview() {
+    MaterialCounter(material_name = "Obsidian", onClick = {})
+}
 
 @Composable
 fun Greeting(name: String) {
