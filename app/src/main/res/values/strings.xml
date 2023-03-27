@@ -10,4 +10,8 @@
     <string name="loosing_line">No more trees. Planet lost. You lost.</string>
     <string name="restart">Restart</string>
     <string name="score">You have %d points.</string>
+    <string name="label_main">activity_main</string>
+    <string name="label_lost">activity_lost</string>
+    <string name="label_score">activity_score</string>
+    <string name="label_blank">fragment_blank</string>
 </resources>
