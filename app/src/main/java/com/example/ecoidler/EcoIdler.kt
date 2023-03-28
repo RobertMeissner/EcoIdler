@@ -68,13 +68,15 @@ data class MaterialStats(val name: String, val amount: Number)
 @Composable
 fun MaterialStat(name: String, amount: Number) {
     Column {
-        Text(text = "$name mined:")
-        Text(text = amount.toString(), color = MaterialTheme.colors.secondaryVariant)
-        Text(text = "$name remaining:")
-        Text(
-            text = (100.0 - amount.toDouble()).toString(),
-            color = MaterialTheme.colors.primaryVariant
-        )
+        if (amount.toDouble() >= 0.0) {
+            Text(text = "$name mined:")
+            Text(text = amount.toString(), color = MaterialTheme.colors.secondaryVariant)
+            Text(text = "$name remaining:")
+            Text(
+                text = (100.0 - amount.toDouble()).toString(),
+                color = MaterialTheme.colors.primaryVariant
+            )
+        }
     }
 }
 
