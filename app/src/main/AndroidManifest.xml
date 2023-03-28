@@ -12,14 +12,10 @@
         android:theme="@style/Theme.EcoIdler"
         tools:targetApi="31">
         <activity
-            android:name=".ScoreActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LostActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.EcoIdler">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
