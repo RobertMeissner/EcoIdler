@@ -1,5 +1,6 @@
 package com.example.ecoidler
 
+import android.content.Context
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,7 +70,7 @@ fun TopAppBarCompose() {
         mutableStateOf(false)
     }
     TopAppBar(
-        contentColor = MaterialTheme.colors.primaryVariant,
+        contentColor = MaterialTheme.colors.secondaryVariant,
         title = { Text(text = "Top app bar") },
         navigationIcon = {
             IconButton(onClick = {
@@ -74,7 +78,43 @@ fun TopAppBarCompose() {
             }) {
                 Icon(Icons.Default.Menu, contentDescription = null)
             }
+        },
+        actions = {
+            IconButton(onClick = { makeToast(context, "Favourites") }) {
+                Icon(Icons.Default.Favorite, contentDescription = null)
+            }
+            IconButton(onClick = { makeToast(context, "Search") }) {
+                Icon(Icons.Default.Search, contentDescription = null)
+            }
+            IconButton(onClick = { showMenu.value = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = null)
+            }
+            DropdownMenu(expanded = showMenu.value, onDismissRequest = { showMenu.value = false }) {
+                DropdownMenuItem(onClick = {
+                    Toast.makeText(
+                        context,
+                        "Settings clicked",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }) {
+                    Text(text = "Settings")
+                }
+                DropdownMenuItem(onClick = {
+                    Toast.makeText(
+                        context,
+                        "Logout clicked",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }) {
+                    Text(text = "Logout")
+                }
+            }
         })
+
+}
+
+fun makeToast(ctx: Context, msg: String) {
+    Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
 }
 
 @Composable
