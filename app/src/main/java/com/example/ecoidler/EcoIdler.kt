@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ecoidler.ui.DataViewModel
 import com.example.ecoidler.ui.theme.EcoIdlerTheme
+import kotlinx.coroutines.delay
 
 @Composable
 fun EcoIdler(viewModel: DataViewModel) {
@@ -33,6 +35,12 @@ fun EcoIdler(viewModel: DataViewModel) {
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
 
+    LaunchedEffect(Unit) {
+        while (true) {
+            viewModel.tick()
+            delay(1000)
+        }
+    }
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
     ) {
@@ -51,14 +59,16 @@ fun EcoIdler(viewModel: DataViewModel) {
 
                         Greeting("EcoIdler")
                         val initialStats =
-                            listOf<MaterialStats>(
+                            listOf(
                                 MaterialStats(
                                     name = "wood",
-                                    amount = viewModel.getWood().value ?: 0
+                                    amount = viewModel.wood.value
                                 )
                             )
                         Stats(stats = initialStats)
-                        MaterialCounter(material_name = "Wood", onClick = { })
+                        MaterialCounter(
+                            material_name = "Wood",
+                            onClick = { viewModel.addWoodGatherer() })
                         MaterialCounter(material_name = "Stone", onClick = { })
                     }
                 }

@@ -11,6 +11,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel: DataViewModel by viewModels()
+        viewModel.load()
 
         super.onCreate(savedInstanceState)
         setContent {
