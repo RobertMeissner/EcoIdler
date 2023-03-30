@@ -1,9 +1,13 @@
 package com.example.ecoidler.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.example.ecoidler.data.FakeDatabase
 import com.example.ecoidler.data.Repository
 
-class DataViewModel(private val repository: Repository) : ViewModel() {
+class DataViewModel(application: Application) : AndroidViewModel(application) {
+
+    private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
     fun addWood() {
         val wood =
             (repository.getWoodGatherers().value ?: 0) + 10 * (repository.getWoodChoppers().value
@@ -25,6 +29,6 @@ class DataViewModel(private val repository: Repository) : ViewModel() {
     fun reset() = repository.reset()
 
     fun score(): Int {
-        return (getTrees().value ?:0) * 100 + (getWood().value ?:0)
+        return (getTrees().value ?: 0) * 100 + (getWood().value ?: 0)
     }
 }

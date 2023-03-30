@@ -24,10 +24,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.ecoidler.ui.DataViewModel
 import com.example.ecoidler.ui.theme.EcoIdlerTheme
 
 @Composable
-fun EcoIdler() {
+fun EcoIdler(viewModel: DataViewModel) {
 
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
@@ -49,9 +50,14 @@ fun EcoIdler() {
                     Column {
 
                         Greeting("EcoIdler")
-                        val materials =
-                            listOf<MaterialStats>(MaterialStats(name = "wood", amount = 10))
-                        Stats(stats = materials)
+                        val initialStats =
+                            listOf<MaterialStats>(
+                                MaterialStats(
+                                    name = "wood",
+                                    amount = viewModel.getWood().value ?: 0
+                                )
+                            )
+                        Stats(stats = initialStats)
                         MaterialCounter(material_name = "Wood", onClick = { })
                         MaterialCounter(material_name = "Stone", onClick = { })
                     }
