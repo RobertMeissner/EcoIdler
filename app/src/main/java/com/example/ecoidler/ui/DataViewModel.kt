@@ -8,32 +8,37 @@ import com.example.ecoidler.data.FakeDatabase
 import com.example.ecoidler.data.Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DataViewModel(application: Application) : AndroidViewModel(application) {
-    private val _wood = MutableStateFlow(0)
-    val wood: StateFlow<Int> = _wood
 
+data class GameUiState(
+    val wood: Int = 0,
+    val woodGatherers: Int = 0,
+    val woodChoppers: Int = 0,
+    val trees: Int = 0,
+)
+
+class DataViewModel(application: Application) : AndroidViewModel(application) {
+    private val _uiState = MutableStateFlow(GameUiState())
+    var uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
+    // Todo: Redundant for now but important for persisting
     private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
     private fun tickStats() {
-        val choppedWood =
-            (repository.getWoodGatherers().value ?: 0) + 10 * (repository.getWoodChoppers().value
-                ?: 0)
-        repository.addWood(choppedWood)
+        val choppedWood = _uiState.value.woodGatherers + 10 * _uiState.value.woodChoppers
         // Todo connect _wood better with repository wood
-        _wood.value = repository.getWood().value ?: 0
-
-        cutTree(repository.getWoodChoppers().value ?: 0)
+        _uiState.update { state -> state.copy(wood = _uiState.value.wood + choppedWood) }
+        _uiState.update { state -> state.copy(trees = _uiState.value.trees - _uiState.value.woodChoppers) }
     }
 
-    fun addWoodGatherer() = repository.addWoodGatherer()
-    fun addWoodChoppers() = repository.addWoodChoppers()
-    fun getWood() = repository.getWood()
-    fun getWoodGatherers() = repository.getWoodGatherers()
-    fun getWoodChoppers() = repository.getWoodChoppers()
-    fun cutTree(number: Int) = repository.cutTree(number)
-    fun getTrees() = repository.getTrees()
-    fun lost() = 100 - _wood.value < 0
+    fun addWoodGatherer() =
+        _uiState.update { state -> state.copy(woodGatherers = state.woodGatherers + 1) }
+    fun addWoodChoppers() =
+        _uiState.update { state -> state.copy(woodChoppers = state.woodChoppers + 1) }
+
+    fun lost() = 100 - uiState.value.wood < 0
 
     fun load(navController: NavHostController) = effect {
         reset()
@@ -45,16 +50,17 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { block() }
     }
 
-    fun reset() = repository.reset()
+    private fun reset() {
+        _uiState.update { state -> state.copy(wood = 0) }
+        _uiState.update { state -> state.copy(trees = 100) }
+    }
 
     fun score(): Int {
-        return (getTrees().value ?: 0) * 100 + (getWood().value ?: 0)
+        return _uiState.value.trees * 100 + _uiState.value.wood
     }
 
     fun tick(navController: NavHostController) {
         tickStats()
-        println(wood)
-        println(lost())
         if (lost()) navController.navigate("lost")
     }
 }

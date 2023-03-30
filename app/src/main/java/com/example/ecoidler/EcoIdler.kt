@@ -10,14 +10,17 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ecoidler.ui.DataViewModel
+import com.example.ecoidler.ui.GameUiState
 import com.example.ecoidler.ui.navigation.TopAppBarCompose
 import com.example.ecoidler.ui.theme.EcoIdlerTheme
 import kotlinx.coroutines.delay
@@ -28,13 +31,9 @@ fun EcoIdler(viewModel: DataViewModel) {
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
     viewModel.load(navController)
+    val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        while (!viewModel.lost()) {
-            viewModel.tick(navController)
-            delay(1000)
-        }
-    }
+    StartLoop(viewModel, navController)
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
     ) {
@@ -48,6 +47,7 @@ fun EcoIdler(viewModel: DataViewModel) {
                 startDestination = "newGame",
                 modifier = Modifier.padding(innerPadding)
             ) {
+
                 composable("home") {
                     Column {
 
@@ -56,13 +56,25 @@ fun EcoIdler(viewModel: DataViewModel) {
                             listOf(
                                 MaterialStats(
                                     name = "wood",
-                                    amount = viewModel.wood.collectAsState().value
+                                    amount = uiState.wood
+                                ),
+                                MaterialStats(
+                                    name = "Gatherers",
+                                    amount = uiState.woodGatherers
+                                ),
+                                MaterialStats(
+                                    name = "Choppers",
+                                    amount = uiState.woodChoppers
                                 )
                             )
                         Stats(stats = initialStats)
+                        MinedMaterials(name = "wood", uiState)
                         MaterialCounter(
                             material_name = "Wood",
                             onClick = { viewModel.addWoodGatherer() })
+                        MaterialCounter(
+                            material_name = "Wood Choppers",
+                            onClick = { viewModel.addWoodChoppers() })
                         MaterialCounter(material_name = "Stone", onClick = { })
                     }
                 }
@@ -75,7 +87,10 @@ fun EcoIdler(viewModel: DataViewModel) {
                 composable("newGame") {
                     Column {
                         Greeting("you")
-                        Button(onClick = { navController.navigate("home") }) {
+                        Button(onClick = {
+                            viewModel.load(navController)
+                            navController.navigate("home")
+                        }) {
 
                             Text("New Game.")
                         }
@@ -92,6 +107,19 @@ fun EcoIdler(viewModel: DataViewModel) {
     }
 
 
+}
+
+@Composable
+private fun StartLoop(
+    viewModel: DataViewModel,
+    navController: NavHostController
+) {
+    LaunchedEffect(Unit) {
+        while (true) {
+            if (!viewModel.lost()) viewModel.tick(navController)
+            delay(1000)
+        }
+    }
 }
 
 
@@ -138,11 +166,20 @@ fun MaterialStat(name: String, amount: Number) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (amount.toDouble() >= 0.0) {
-            Text(text = "$name mined:")
-            Text(text = amount.toString(), color = MaterialTheme.colors.secondaryVariant)
+            Text(text = "$name: $amount")
+        }
+    }
+}
+
+@Composable
+fun MinedMaterials(name: String, uiState: GameUiState) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (uiState.wood.toDouble() >= 0.0) {
             Text(text = "$name remaining:")
             Text(
-                text = (100.0 - amount.toDouble()).toString(),
+                text = (uiState.trees - uiState.wood.toDouble()).toString(),
                 color = MaterialTheme.colors.primaryVariant
             )
         }
