@@ -38,12 +38,12 @@ fun EcoIdler(viewModel: DataViewModel) {
     ) {
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { TopAppBarCompose(navController) },
+            topBar = { TopAppBarCompose(navController, viewModel = viewModel) },
 //            bottomBar = { BottomBar(navController)            }
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "newGame",
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable("home") {
@@ -66,9 +66,17 @@ fun EcoIdler(viewModel: DataViewModel) {
                 }
                 composable("support") {
                     Column {
-
                         Greeting("you")
                         Text("Thank you for wanting to support me.")
+                    }
+                }
+                composable("newGame") {
+                    Column {
+                        Greeting("you")
+                        Button(onClick = { navController.navigate("home") }) {
+
+                            Text("New Game.")
+                        }
                     }
                 }
                 composable("lost") {

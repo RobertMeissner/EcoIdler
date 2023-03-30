@@ -3,18 +3,16 @@ package com.example.ecoidler.ui.navigation
 import android.widget.Toast
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import com.example.ecoidler.ui.DataViewModel
 
 @Composable
-fun TopAppBarCompose(navController: NavHostController) {
+fun TopAppBarCompose(navController: NavHostController, viewModel: DataViewModel) {
     val context = LocalContext.current
     val showMenu = remember {
         mutableStateOf(false)
@@ -36,9 +34,10 @@ fun TopAppBarCompose(navController: NavHostController) {
                 Icon(Icons.Default.Favorite, contentDescription = null)
             }
             IconButton(onClick = {
-                navController.navigate("home")
+                if (!viewModel.lost()) navController.navigate("home")
+                else navController.navigate("newGame")
             }) {
-                Icon(Icons.Default.Search, contentDescription = null)
+                Icon(Icons.Default.Home, contentDescription = null)
             }
             IconButton(onClick = { showMenu.value = true }) {
                 Icon(Icons.Default.MoreVert, contentDescription = null)
