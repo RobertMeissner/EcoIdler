@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -36,7 +37,7 @@ fun EcoIdler() {
     ) {
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { TopAppBarCompose() },
+            topBar = { TopAppBarCompose(navController) },
 //            bottomBar = { BottomBar(navController)            }
         ) { innerPadding ->
             NavHost(
@@ -55,6 +56,13 @@ fun EcoIdler() {
                         MaterialCounter(material_name = "Stone", onClick = { })
                     }
                 }
+                composable("support") {
+                    Column {
+
+                        Greeting("you")
+                        Text("Thank you for wanting to support me.")
+                    }
+                }
             }
         }
     }
@@ -64,7 +72,7 @@ fun EcoIdler() {
 
 
 @Composable
-fun TopAppBarCompose() {
+fun TopAppBarCompose(navController: NavHostController) {
     val context = LocalContext.current
     val showMenu = remember {
         mutableStateOf(false)
@@ -80,10 +88,16 @@ fun TopAppBarCompose() {
             }
         },
         actions = {
-            IconButton(onClick = { makeToast(context, "Favourites") }) {
+            IconButton(onClick = {
+                makeToast(context, "Support")
+                navController.navigate("support")
+            }) {
                 Icon(Icons.Default.Favorite, contentDescription = null)
             }
-            IconButton(onClick = { makeToast(context, "Search") }) {
+            IconButton(onClick = {
+                makeToast(context, "Search")
+                navController.navigate("home")
+            }) {
                 Icon(Icons.Default.Search, contentDescription = null)
             }
             IconButton(onClick = { showMenu.value = true }) {
