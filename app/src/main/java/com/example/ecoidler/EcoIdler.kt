@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
@@ -24,10 +25,11 @@ fun EcoIdler(viewModel: DataViewModel) {
 
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
+    viewModel.load(navController)
 
     LaunchedEffect(Unit) {
-        while (true) {
-            viewModel.tick()
+        while (!viewModel.lost()) {
+            viewModel.tick(navController)
             delay(1000)
         }
     }
@@ -52,7 +54,7 @@ fun EcoIdler(viewModel: DataViewModel) {
                             listOf(
                                 MaterialStats(
                                     name = "wood",
-                                    amount = viewModel.wood.value
+                                    amount = viewModel.wood.collectAsState().value
                                 )
                             )
                         Stats(stats = initialStats)
@@ -67,6 +69,12 @@ fun EcoIdler(viewModel: DataViewModel) {
 
                         Greeting("you")
                         Text("Thank you for wanting to support me.")
+                    }
+                }
+                composable("lost") {
+                    Column {
+
+                        Text("You have lost.")
                     }
                 }
             }
