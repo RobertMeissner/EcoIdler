@@ -10,7 +10,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -111,7 +113,9 @@ fun MaterialCounterPreview() {
 
 @Composable
 fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+    Text(
+        text = "Hello $name!", textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -130,7 +134,9 @@ data class MaterialStats(val name: String, val amount: Number)
 
 @Composable
 fun MaterialStat(name: String, amount: Number) {
-    Column {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         if (amount.toDouble() >= 0.0) {
             Text(text = "$name mined:")
             Text(text = amount.toString(), color = MaterialTheme.colors.secondaryVariant)
