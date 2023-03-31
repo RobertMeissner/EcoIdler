@@ -2,6 +2,7 @@ package com.example.ecoidler
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import com.example.ecoidler.ui.screens.MaterialStat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
