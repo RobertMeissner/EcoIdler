@@ -1,5 +1,6 @@
 package com.example.ecoidler
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
@@ -18,6 +19,7 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         // Context of the app under test.
+        createComposeRule()
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.ecoidler", appContext.packageName)
     }

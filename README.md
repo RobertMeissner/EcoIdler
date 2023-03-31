@@ -1,6 +1,11 @@
 # EcoIdler
 WIP: A simple clicker/idler with an Eco touch.
 
+## Help me help others:
+
+Support me on [Patreon](https://patreon.com/RobertForFuture) 
+or on [Ko-Fi](https://ko-fi.com/robertforfuture)
+
 ## Story
 
 You crash landed on a planet - yeah, that kind of story.
