@@ -114,24 +114,7 @@ private fun GameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     Column {
-
-        Greeting("EcoIdler")
-        val initialStats =
-            listOf(
-                MaterialStats(
-                    name = "wood",
-                    amount = uiState.wood
-                ),
-                MaterialStats(
-                    name = "Gatherers",
-                    amount = uiState.woodGatherers
-                ),
-                MaterialStats(
-                    name = "Choppers",
-                    amount = uiState.woodChoppers
-                )
-            )
-        Stats(stats = initialStats)
+        Stats(uiState)
         MinedMaterials(name = "wood", uiState)
         MaterialCounter(
             material_name = "Wood",
@@ -150,11 +133,8 @@ private fun GameScreen(
 )
 @Composable
 fun GameScreenPreview() {
-
-    val viewModel = getViewModel<DataViewModel> { parametersOf() }
-//    viewModel.reset()
-    GameScreen (viewModel)
-
+    val viewModel = DataViewModel()
+    GameScreen(viewModel)
 }
 
 @Composable
@@ -217,8 +197,22 @@ fun Greeting(name: String) {
 }
 
 @Composable
-fun Stats(stats: List<MaterialStats>) {
-    print(stats)
+fun Stats(uiState: GameUiState) {
+    val stats =
+        listOf(
+            MaterialStats(
+                name = "wood",
+                amount = uiState.wood
+            ),
+            MaterialStats(
+                name = "Gatherers",
+                amount = uiState.woodGatherers
+            ),
+            MaterialStats(
+                name = "Choppers",
+                amount = uiState.woodChoppers
+            )
+        )
     LazyColumn {
         items(stats) { stat ->
             MaterialStat(name = stat.name, amount = stat.amount)
@@ -264,13 +258,8 @@ fun MinedMaterials(name: String, uiState: GameUiState) {
 fun DefaultPreview() {
     Surface {
         Column {
-
-            Greeting("Android")
-            val materials = listOf(
-                MaterialStats(name = "wood", amount = 3),
-                MaterialStats(name = "stone", amount = 30)
-            )
-            Stats(stats = materials)
+            val uiState = GameUiState(wood = 3)
+            Stats(uiState)
         }
     }
 
