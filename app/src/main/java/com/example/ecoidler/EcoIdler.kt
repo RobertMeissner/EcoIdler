@@ -10,7 +10,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,7 +32,6 @@ fun EcoIdler(viewModel: DataViewModel) {
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
     viewModel.load(navController)
-    val uiState by viewModel.uiState.collectAsState()
 
     StartLoop(viewModel, navController)
     Surface(
@@ -50,7 +48,7 @@ fun EcoIdler(viewModel: DataViewModel) {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screens.Home.route) {
-                    GameScreen(uiState, viewModel)
+                    GameScreen(viewModel)
                 }
                 composable(Screens.Support.route) {
                     Column {
@@ -110,9 +108,9 @@ private fun LostScreen(
 
 @Composable
 private fun GameScreen(
-    uiState: GameUiState,
     viewModel: DataViewModel
 ) {
+    val uiState = viewModel.uiState.collectAsState().value
     Column {
 
         Greeting("EcoIdler")
@@ -142,6 +140,21 @@ private fun GameScreen(
         MaterialCounter(material_name = "Stone", onClick = { })
     }
 }
+
+//
+//@Preview(name = "Light Mode")
+//@Preview(
+//    uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Dark Mode"
+//)
+//@Composable
+//fun GameScreenPreview() {
+//    val viewModel = DataViewModel()
+//    viewModel.uiState.value.wood = 0
+//    EcoIdlerTheme {
+//        GameScreen ()
+//
+//    }
+//}
 
 @Composable
 private fun NewGameScreen(
