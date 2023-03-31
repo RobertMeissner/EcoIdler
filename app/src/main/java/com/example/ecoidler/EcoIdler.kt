@@ -25,12 +25,15 @@ import com.example.ecoidler.ui.navigation.Screens
 import com.example.ecoidler.ui.navigation.TopAppBarCompose
 import com.example.ecoidler.ui.theme.EcoIdlerTheme
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun EcoIdler(viewModel: DataViewModel) {
+fun EcoIdler() {
 
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
+    val viewModel = getViewModel<DataViewModel> { parametersOf() }
     viewModel.load(navController)
 
     StartLoop(viewModel, navController)
@@ -149,9 +152,8 @@ private fun GameScreen(
 //@Composable
 //fun GameScreenPreview() {
 //    val viewModel = DataViewModel()
-//    viewModel.uiState.value.wood = 0
 //    EcoIdlerTheme {
-//        GameScreen ()
+//        GameScreen (viewModel)
 //
 //    }
 //}
