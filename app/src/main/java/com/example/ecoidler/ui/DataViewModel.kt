@@ -30,8 +30,12 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     private fun tickStats() {
         val choppedWood = _uiState.value.woodGatherers + 10 * _uiState.value.woodChoppers
         // Todo connect _wood better with repository wood
-        _uiState.update { state -> state.copy(wood = _uiState.value.wood + choppedWood) }
-        _uiState.update { state -> state.copy(trees = _uiState.value.trees - _uiState.value.woodChoppers) }
+        _uiState.update { state ->
+            state.copy(
+                wood = _uiState.value.wood + choppedWood,
+                trees = _uiState.value.trees - _uiState.value.woodChoppers
+            )
+        }
     }
 
     fun addWoodGatherer() =
@@ -53,10 +57,14 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun reset() {
-        _uiState.update { state -> state.copy(wood = 0) }
-        _uiState.update { state -> state.copy(woodGatherers = 0) }
-        _uiState.update { state -> state.copy(woodChoppers = 0) }
-        _uiState.update { state -> state.copy(trees = 100) }
+        _uiState.update { state ->
+            state.copy(
+                wood = 0,
+                woodGatherers = 0,
+                woodChoppers = 0,
+                trees = 100
+            )
+        }
     }
 
     fun score(): Int {

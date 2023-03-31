@@ -146,17 +146,23 @@ private fun GameScreen(
 @Composable
 private fun NewGameScreen(
     viewModel: DataViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+
 ) {
-    Column {
-        Text(stringResource(R.string.new_game))
-        Button(onClick = {
-            viewModel.load(navController)
-            navController.navigate(Screens.Intro.route)
-        }) {
-            Text("New Game.")
-        }
-    }
+    AlertDialog(
+        onDismissRequest = {},
+        title = { Text(stringResource(R.string.new_game)) },
+        modifier = modifier,
+        dismissButton = {},
+        confirmButton = {
+            TextButton(onClick = {
+                viewModel.load(navController)
+                navController.navigate(Screens.Intro.route)
+            }) {
+                Text("New Game")
+            }
+        })
 }
 
 @Composable
