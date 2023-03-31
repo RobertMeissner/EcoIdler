@@ -49,60 +49,27 @@ fun EcoIdler(viewModel: DataViewModel) {
                 startDestination = "newGame",
                 modifier = Modifier.padding(innerPadding)
             ) {
-
                 composable(Screens.Home.route) {
-                    Column {
-
-                        Greeting("EcoIdler")
-                        val initialStats =
-                            listOf(
-                                MaterialStats(
-                                    name = "wood",
-                                    amount = uiState.wood
-                                ),
-                                MaterialStats(
-                                    name = "Gatherers",
-                                    amount = uiState.woodGatherers
-                                ),
-                                MaterialStats(
-                                    name = "Choppers",
-                                    amount = uiState.woodChoppers
-                                )
-                            )
-                        Stats(stats = initialStats)
-                        MinedMaterials(name = "wood", uiState)
-                        MaterialCounter(
-                            material_name = "Wood",
-                            onClick = { viewModel.addWoodGatherer() })
-                        MaterialCounter(
-                            material_name = "Wood Choppers",
-                            onClick = { viewModel.addWoodChoppers() })
-                        MaterialCounter(material_name = "Stone", onClick = { })
-                    }
+                    GameScreen(uiState, viewModel)
                 }
                 composable(Screens.Support.route) {
                     Column {
                         Greeting("you")
-                        Text("Thank you for wanting to support me.")
+                        Text(stringResource(R.string.support_me))
                     }
                 }
                 composable(Screens.NewGame.route) {
-                    Column {
-                        Greeting(stringResource(R.string.ai_name))
-                        Text(
-                            "Your colony ship has arrived at a promising planet. " +
-                                    "Support the humans until they are self sufficient. " +
-                                    "It is your choice to redo the mistakes we made on Earth or live up to your full potential."
-                        )
-                        NewGame(viewModel, navController)
-                    }
+                    NewGameScreen(viewModel, navController)
+                }
+                composable(Screens.Story.route) {
+                    val storyId = it.arguments?.getInt("id") ?: R.string.intro
+                    StoryScreen(viewModel, navController, storyId)
+                }
+                composable(Screens.Intro.route) {
+                    StoryScreen(viewModel, navController, R.string.intro)
                 }
                 composable(Screens.Lost.route) {
-                    Column {
-                        Text("You have lost.")
-                        Text("You have made ${viewModel.score()} points.")
-                        NewGame(viewModel, navController)
-                    }
+                    LostScreen(viewModel, navController)
                 }
             }
         }
@@ -112,15 +79,83 @@ fun EcoIdler(viewModel: DataViewModel) {
 }
 
 @Composable
-private fun NewGame(
+private fun StoryScreen(
+    viewModel: DataViewModel,
+    navController: NavHostController,
+    story_id: Int,
+) {
+    Column {
+        Greeting(stringResource(R.string.ai_name))
+        Text(stringResource(story_id))
+        Button(onClick = {
+            viewModel.load(navController)
+            navController.navigate(Screens.Home.route)
+        }) {
+            Text("Begin.")
+        }
+    }
+}
+
+@Composable
+private fun LostScreen(
     viewModel: DataViewModel,
     navController: NavHostController
 ) {
-    Button(onClick = {
-        viewModel.load(navController)
-        navController.navigate(Screens.Home.route)
-    }) {
-        Text("New Game.")
+    Column {
+        Text("You have lost.")
+        Text("You have made ${viewModel.score()} points.")
+        NewGameScreen(viewModel, navController)
+    }
+}
+
+@Composable
+private fun GameScreen(
+    uiState: GameUiState,
+    viewModel: DataViewModel
+) {
+    Column {
+
+        Greeting("EcoIdler")
+        val initialStats =
+            listOf(
+                MaterialStats(
+                    name = "wood",
+                    amount = uiState.wood
+                ),
+                MaterialStats(
+                    name = "Gatherers",
+                    amount = uiState.woodGatherers
+                ),
+                MaterialStats(
+                    name = "Choppers",
+                    amount = uiState.woodChoppers
+                )
+            )
+        Stats(stats = initialStats)
+        MinedMaterials(name = "wood", uiState)
+        MaterialCounter(
+            material_name = "Wood",
+            onClick = { viewModel.addWoodGatherer() })
+        MaterialCounter(
+            material_name = "Wood Choppers",
+            onClick = { viewModel.addWoodChoppers() })
+        MaterialCounter(material_name = "Stone", onClick = { })
+    }
+}
+
+@Composable
+private fun NewGameScreen(
+    viewModel: DataViewModel,
+    navController: NavHostController
+) {
+    Column {
+        Text(stringResource(R.string.new_game))
+        Button(onClick = {
+            viewModel.load(navController)
+            navController.navigate(Screens.Intro.route)
+        }) {
+            Text("New Game.")
+        }
     }
 }
 
@@ -212,7 +247,7 @@ fun DefaultPreview() {
             Column {
 
                 Greeting("Android")
-                val materials = listOf<MaterialStats>(
+                val materials = listOf(
                     MaterialStats(name = "wood", amount = 3),
                     MaterialStats(name = "stone", amount = 30)
                 )

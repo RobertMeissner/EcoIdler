@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">EcoIdler</string>
     <string name="ai_name">Warden AI</string>
+    <string name="new_game">Start new game</string>
+    <string name="intro">\"Your colony ship has arrived at a promising planet. \nSupport the humans until they are self sufficient. It is your choice to redo the mistakes we made on Earth or live up to your full potential."\"</string>
+    <string name="support_me">Thank you for wanting to support me.</string>
 </resources>
