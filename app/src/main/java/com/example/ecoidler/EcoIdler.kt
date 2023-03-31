@@ -23,14 +23,16 @@ import com.example.ecoidler.ui.DataViewModel
 import com.example.ecoidler.ui.GameUiState
 import com.example.ecoidler.ui.navigation.Screens
 import com.example.ecoidler.ui.navigation.TopAppBarCompose
-import com.example.ecoidler.ui.theme.EcoIdlerTheme
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun EcoIdler(viewModel: DataViewModel) {
+fun EcoIdler() {
 
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
+    val viewModel = getViewModel<DataViewModel> { parametersOf() }
     viewModel.load(navController)
 
     StartLoop(viewModel, navController)
@@ -112,24 +114,7 @@ private fun GameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     Column {
-
-        Greeting("EcoIdler")
-        val initialStats =
-            listOf(
-                MaterialStats(
-                    name = "wood",
-                    amount = uiState.wood
-                ),
-                MaterialStats(
-                    name = "Gatherers",
-                    amount = uiState.woodGatherers
-                ),
-                MaterialStats(
-                    name = "Choppers",
-                    amount = uiState.woodChoppers
-                )
-            )
-        Stats(stats = initialStats)
+        Stats(uiState)
         MinedMaterials(name = "wood", uiState)
         MaterialCounter(
             material_name = "Wood",
@@ -141,20 +126,16 @@ private fun GameScreen(
     }
 }
 
-//
-//@Preview(name = "Light Mode")
-//@Preview(
-//    uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Dark Mode"
-//)
-//@Composable
-//fun GameScreenPreview() {
-//    val viewModel = DataViewModel()
-//    viewModel.uiState.value.wood = 0
-//    EcoIdlerTheme {
-//        GameScreen ()
-//
-//    }
-//}
+
+@Preview(name = "Light Mode")
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Dark Mode"
+)
+@Composable
+fun GameScreenPreview() {
+    val viewModel = DataViewModel()
+    GameScreen(viewModel)
+}
 
 @Composable
 private fun NewGameScreen(
@@ -216,8 +197,22 @@ fun Greeting(name: String) {
 }
 
 @Composable
-fun Stats(stats: List<MaterialStats>) {
-    print(stats)
+fun Stats(uiState: GameUiState) {
+    val stats =
+        listOf(
+            MaterialStats(
+                name = "wood",
+                amount = uiState.wood
+            ),
+            MaterialStats(
+                name = "Gatherers",
+                amount = uiState.woodGatherers
+            ),
+            MaterialStats(
+                name = "Choppers",
+                amount = uiState.woodChoppers
+            )
+        )
     LazyColumn {
         items(stats) { stat ->
             MaterialStat(name = stat.name, amount = stat.amount)
@@ -261,18 +256,11 @@ fun MinedMaterials(name: String, uiState: GameUiState) {
 )
 @Composable
 fun DefaultPreview() {
-    EcoIdlerTheme {
-        Surface {
-            Column {
-
-                Greeting("Android")
-                val materials = listOf(
-                    MaterialStats(name = "wood", amount = 3),
-                    MaterialStats(name = "stone", amount = 30)
-                )
-                Stats(stats = materials)
-            }
+    Surface {
+        Column {
+            val uiState = GameUiState(wood = 3)
+            Stats(uiState)
         }
-
     }
+
 }

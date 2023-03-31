@@ -1,7 +1,6 @@
 package com.example.ecoidler.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.ecoidler.data.FakeDatabase
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 
 
 data class GameUiState(
@@ -21,7 +21,7 @@ data class GameUiState(
     val trees: Int = 0,
 )
 
-class DataViewModel(application: Application) : AndroidViewModel(application) {
+class DataViewModel() : ViewModel(), KoinComponent {
     private val _uiState = MutableStateFlow(GameUiState())
     var uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
