@@ -23,7 +23,6 @@ import com.example.ecoidler.ui.DataViewModel
 import com.example.ecoidler.ui.GameUiState
 import com.example.ecoidler.ui.navigation.Screens
 import com.example.ecoidler.ui.navigation.TopAppBarCompose
-import com.example.ecoidler.ui.theme.EcoIdlerTheme
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -144,19 +143,19 @@ private fun GameScreen(
     }
 }
 
-//
-//@Preview(name = "Light Mode")
-//@Preview(
-//    uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Dark Mode"
-//)
-//@Composable
-//fun GameScreenPreview() {
-//    val viewModel = DataViewModel()
-//    EcoIdlerTheme {
-//        GameScreen (viewModel)
-//
-//    }
-//}
+
+@Preview(name = "Light Mode")
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true, name = "Dark Mode"
+)
+@Composable
+fun GameScreenPreview() {
+
+    val viewModel = getViewModel<DataViewModel> { parametersOf() }
+//    viewModel.reset()
+    GameScreen (viewModel)
+
+}
 
 @Composable
 private fun NewGameScreen(
@@ -263,18 +262,16 @@ fun MinedMaterials(name: String, uiState: GameUiState) {
 )
 @Composable
 fun DefaultPreview() {
-    EcoIdlerTheme {
-        Surface {
-            Column {
+    Surface {
+        Column {
 
-                Greeting("Android")
-                val materials = listOf(
-                    MaterialStats(name = "wood", amount = 3),
-                    MaterialStats(name = "stone", amount = 30)
-                )
-                Stats(stats = materials)
-            }
+            Greeting("Android")
+            val materials = listOf(
+                MaterialStats(name = "wood", amount = 3),
+                MaterialStats(name = "stone", amount = 30)
+            )
+            Stats(stats = materials)
         }
-
     }
+
 }
