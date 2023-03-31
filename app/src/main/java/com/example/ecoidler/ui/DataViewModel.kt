@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.ecoidler.data.FakeDatabase
 import com.example.ecoidler.data.Repository
+import com.example.ecoidler.ui.navigation.Screens
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,10 +36,11 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addWoodGatherer() =
         _uiState.update { state -> state.copy(woodGatherers = state.woodGatherers + 1) }
+
     fun addWoodChoppers() =
         _uiState.update { state -> state.copy(woodChoppers = state.woodChoppers + 1) }
 
-    fun lost() = 100 - uiState.value.wood < 0
+    fun lost() = uiState.value.trees <= 0
 
     fun load(navController: NavHostController) = effect {
         reset()
@@ -52,6 +54,8 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun reset() {
         _uiState.update { state -> state.copy(wood = 0) }
+        _uiState.update { state -> state.copy(woodGatherers = 0) }
+        _uiState.update { state -> state.copy(woodChoppers = 0) }
         _uiState.update { state -> state.copy(trees = 100) }
     }
 
@@ -61,6 +65,6 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
 
     fun tick(navController: NavHostController) {
         tickStats()
-        if (lost()) navController.navigate("lost")
+        if (lost()) navController.navigate(Screens.Lost.route)
     }
 }

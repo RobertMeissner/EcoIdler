@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -21,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ecoidler.ui.DataViewModel
 import com.example.ecoidler.ui.GameUiState
+import com.example.ecoidler.ui.navigation.Screens
 import com.example.ecoidler.ui.navigation.TopAppBarCompose
 import com.example.ecoidler.ui.theme.EcoIdlerTheme
 import kotlinx.coroutines.delay
@@ -48,7 +50,7 @@ fun EcoIdler(viewModel: DataViewModel) {
                 modifier = Modifier.padding(innerPadding)
             ) {
 
-                composable("home") {
+                composable(Screens.Home.route) {
                     Column {
 
                         Greeting("EcoIdler")
@@ -78,28 +80,28 @@ fun EcoIdler(viewModel: DataViewModel) {
                         MaterialCounter(material_name = "Stone", onClick = { })
                     }
                 }
-                composable("support") {
+                composable(Screens.Support.route) {
                     Column {
                         Greeting("you")
                         Text("Thank you for wanting to support me.")
                     }
                 }
-                composable("newGame") {
+                composable(Screens.NewGame.route) {
                     Column {
-                        Greeting("you")
-                        Button(onClick = {
-                            viewModel.load(navController)
-                            navController.navigate("home")
-                        }) {
-
-                            Text("New Game.")
-                        }
+                        Greeting(stringResource(R.string.ai_name))
+                        Text(
+                            "Your colony ship has arrived at a promising planet. " +
+                                    "Support the humans until they are self sufficient. " +
+                                    "It is your choice to redo the mistakes we made on Earth or live up to your full potential."
+                        )
+                        NewGame(viewModel, navController)
                     }
                 }
-                composable("lost") {
+                composable(Screens.Lost.route) {
                     Column {
-
                         Text("You have lost.")
+                        Text("You have made ${viewModel.score()} points.")
+                        NewGame(viewModel, navController)
                     }
                 }
             }
@@ -107,6 +109,19 @@ fun EcoIdler(viewModel: DataViewModel) {
     }
 
 
+}
+
+@Composable
+private fun NewGame(
+    viewModel: DataViewModel,
+    navController: NavHostController
+) {
+    Button(onClick = {
+        viewModel.load(navController)
+        navController.navigate(Screens.Home.route)
+    }) {
+        Text("New Game.")
+    }
 }
 
 @Composable
@@ -179,7 +194,7 @@ fun MinedMaterials(name: String, uiState: GameUiState) {
         if (uiState.wood.toDouble() >= 0.0) {
             Text(text = "$name remaining:")
             Text(
-                text = (uiState.trees - uiState.wood.toDouble()).toString(),
+                text = uiState.trees.toString(),
                 color = MaterialTheme.colors.primaryVariant
             )
         }

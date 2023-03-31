@@ -3,7 +3,10 @@ package com.example.ecoidler.ui.navigation
 import android.widget.Toast
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,13 +32,13 @@ fun TopAppBarCompose(navController: NavHostController, viewModel: DataViewModel)
         },
         actions = {
             IconButton(onClick = {
-                navController.navigate("support")
+                navController.navigate(Screens.Support.route)
             }) {
                 Icon(Icons.Default.Favorite, contentDescription = null)
             }
             IconButton(onClick = {
-                if (!viewModel.lost()) navController.navigate("home")
-                else navController.navigate("newGame")
+                if (!viewModel.lost()) navController.navigate(Screens.Home.route)
+                else navController.navigate(Screens.NewGame.route)
             }) {
                 Icon(Icons.Default.Home, contentDescription = null)
             }
