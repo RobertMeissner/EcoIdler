@@ -26,7 +26,7 @@ import com.example.ecoidler.ui.GameUiState
 data class MaterialStats(val name: String, val amount: Number)
 
 enum class Materials {
-    WOOD, STONE, FOOD, WATER
+    FUEL
 }
 
 @Composable
@@ -40,10 +40,7 @@ fun GameScreen(
             amount = viewModel.score()
         )
         Stats(uiState)
-        MaterialPill(viewModel, Materials.WOOD)
-        MaterialPill(viewModel, Materials.STONE)
-        MaterialPill(viewModel, Materials.FOOD)
-        MaterialPill(viewModel, Materials.WATER)
+        MaterialPill(viewModel, Materials.FUEL)
     }
 }
 
@@ -55,7 +52,7 @@ fun GameScreen(
 @Composable
 fun MaterialPillPreview() {
     val viewModel = DataViewModel()
-    MaterialPill(viewModel, Materials.STONE)
+    MaterialPill(viewModel, Materials.FUEL)
 }
 
 @Composable
@@ -73,7 +70,7 @@ private fun MaterialPill(
         MinedMaterials(name = material.name, uiState)
         WorkerButton(
             icon = Icons.Default.Info,
-            onClick = { viewModel.addWoodGatherer() })
+            onClick = { viewModel.addWoodWorker() })
         WorkerButton(
             icon = Icons.Default.Face,
             onClick = { viewModel.addWoodChoppers() })
@@ -116,15 +113,15 @@ fun Stats(uiState: GameUiState) {
         listOf(
             MaterialStats(
                 name = "wood",
-                amount = uiState.wood
+                amount = uiState.fuel
             ),
             MaterialStats(
                 name = "Gatherers",
-                amount = uiState.woodGatherers
+                amount = uiState.woodWorker
             ),
             MaterialStats(
                 name = "Choppers",
-                amount = uiState.woodChoppers
+                amount = uiState.uraniumWorker
             )
         )
     LazyColumn {
@@ -151,7 +148,7 @@ fun MinedMaterials(name: String, uiState: GameUiState) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (uiState.wood.toDouble() >= 0.0) {
+        if (uiState.fuel.toDouble() >= 0.0) {
             Icon(Icons.Default.Info, contentDescription = null)
             Text(
                 text = "${name}:",
@@ -173,7 +170,7 @@ fun MinedMaterials(name: String, uiState: GameUiState) {
 fun DefaultPreview() {
     Surface {
         Column {
-            val uiState = GameUiState(wood = 3)
+            val uiState = GameUiState(fuel = 3)
             Stats(uiState)
         }
     }
