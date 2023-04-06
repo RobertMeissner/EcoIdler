@@ -35,6 +35,10 @@ fun GameScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     Column(modifier = Modifier.fillMaxWidth()) {
+        MaterialStats(
+            name = "score",
+            amount = viewModel.score()
+        )
         Stats(uiState)
         MaterialPill(viewModel, Materials.WOOD)
         MaterialPill(viewModel, Materials.STONE)
@@ -61,7 +65,9 @@ private fun MaterialPill(
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     Row(
-        modifier = Modifier.padding(5.dp).fillMaxWidth(1f),
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth(1f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         MinedMaterials(name = material.name, uiState)
