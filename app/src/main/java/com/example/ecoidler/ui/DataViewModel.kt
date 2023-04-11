@@ -1,5 +1,7 @@
 package com.example.ecoidler.ui
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -12,71 +14,71 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
+import java.util.*
 
 
 data class GameUiState(
-    val fuel: Int = 0,
-    val woodWorker: Int = 0,
-    val uraniumWorker: Int = 0,
-    val trees: Int = 0,
+    var lastTick: Date,
+    var materials: SnapshotStateList<IValue> = mutableStateListOf()
 
-    val materials: List<Material> = listOf()
 )
 
-interface IMaterial {
+interface IValue {
+    fun addWorker()
+    fun mine()
+
     var amount: Float
-    var capacity: Float
-    var planetCapacity: Float
+    var workers: Float
     var name: String
-
-    fun mine(timeDiff: Float, workers: Float): Float
-
 }
 
-sealed class Material(material_name: String) : IMaterial {
-    override var amount: Float = 0.0f
-    override var capacity: Float = 0.0f
-    override var planetCapacity: Float = 0.0f
+open class Value(valueName: String) : IValue {
+    override var amount: Float = 0F
+    override var workers: Float = 0F
     final override var name: String = ""
 
     init {
-        name = material_name
+        name = valueName
     }
 
-    override fun mine(timeDiff: Float, workers: Float): Float {
-        var mined = timeDiff * workers
-        if (mined > (capacity - amount)) mined = capacity - amount
-        planetCapacity -= mined
-        return mined
+
+    override fun addWorker() {
+        workers += 1
+        println("${name}: $workers")
     }
 
-    object Wood : Material(material_name = "wood")
+    override fun mine() {
+        val timeDiff = 1F
+        val mined = timeDiff * workers
+        amount += mined
+        println("${name}: $amount by $workers")
+    }
+
+    object Wood : Value("wood")
+    object Coal : Value("coal")
 }
 
+
 class DataViewModel() : ViewModel(), KoinComponent {
-    private val _uiState = MutableStateFlow(GameUiState())
+    private val _uiState = MutableStateFlow(GameUiState(lastTick = Date()))
     var uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
 
     // Todo: Redundant for now but important for persisting
     private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
+
     private fun tickStats() {
-        val fuel = _uiState.value.woodWorker + 10 * _uiState.value.uraniumWorker
-        // Todo connect _wood better with repository wood
+        _uiState.value.materials.forEach { material -> material.mine() }
+
         _uiState.update { state ->
             state.copy(
-                fuel = _uiState.value.fuel + fuel,
-                trees = _uiState.value.trees - _uiState.value.uraniumWorker
+                lastTick = Date()
             )
         }
     }
 
-    fun addWoodWorker() =
-        _uiState.update { state -> state.copy(woodWorker = state.woodWorker + 1) }
 
-    fun addWoodChoppers() =
-        _uiState.update { state -> state.copy(uraniumWorker = state.uraniumWorker + 1) }
-
-    fun lost() = uiState.value.trees <= 0
+    fun lost() = uiState.value.materials[0].amount >= 10
 
     fun load(navController: NavHostController) = effect {
         reset()
@@ -91,16 +93,13 @@ class DataViewModel() : ViewModel(), KoinComponent {
     private fun reset() {
         _uiState.update { state ->
             state.copy(
-                fuel = 0,
-                woodWorker = 0,
-                uraniumWorker = 0,
-                trees = 100
+                materials = mutableStateListOf(Value.Wood, Value.Coal)
             )
         }
     }
 
     fun score(): Int {
-        return _uiState.value.trees * 100 + _uiState.value.fuel
+        return _uiState.value.materials[0].amount.toInt()
     }
 
     fun tick(navController: NavHostController) {

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -14,6 +13,7 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,26 +21,33 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecoidler.ui.DataViewModel
 import com.example.ecoidler.ui.GameUiState
+import com.example.ecoidler.ui.IValue
+import com.example.ecoidler.ui.Value
+import java.util.*
 
 
 data class MaterialStats(val name: String, val amount: Number)
 
-enum class Materials {
-    FUEL
-}
 
 @Composable
 fun GameScreen(
     viewModel: DataViewModel
 ) {
     val uiState = viewModel.uiState.collectAsState().value
+
     Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "Last tick at ${uiState.lastTick}")
         MaterialStats(
             name = "score",
             amount = viewModel.score()
         )
-        Stats(uiState)
-        MaterialPill(viewModel, Materials.FUEL)
+        uiState.materials.forEach { material ->
+            Text(text = "${material.name}: ${material.amount}. Workers: ${material.workers}")
+        }
+        uiState.materials.forEach { material ->
+            MaterialPill(value = material)
+        }
+        Stats(materials = uiState.materials)
     }
 }
 
@@ -51,29 +58,23 @@ fun GameScreen(
 )
 @Composable
 fun MaterialPillPreview() {
-    val viewModel = DataViewModel()
-    MaterialPill(viewModel, Materials.FUEL)
+    MaterialPill(Value.Wood)
 }
 
 @Composable
 private fun MaterialPill(
-    viewModel: DataViewModel,
-    material: Materials
+    value: IValue
 ) {
-    val uiState = viewModel.uiState.collectAsState().value
     Row(
         modifier = Modifier
             .padding(5.dp)
             .fillMaxWidth(1f),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MinedMaterials(name = material.name, uiState)
-        WorkerButton(
-            icon = Icons.Default.Info,
-            onClick = { viewModel.addWoodWorker() })
+        MinedMaterials(material = value)
         WorkerButton(
             icon = Icons.Default.Face,
-            onClick = { viewModel.addWoodChoppers() })
+            onClick = { value.addWorker() })
     }
 }
 
@@ -108,25 +109,12 @@ fun MaterialCounterPreview() {
 }
 
 @Composable
-fun Stats(uiState: GameUiState) {
-    val stats =
-        listOf(
-            MaterialStats(
-                name = "wood",
-                amount = uiState.fuel
-            ),
-            MaterialStats(
-                name = "Gatherers",
-                amount = uiState.woodWorker
-            ),
-            MaterialStats(
-                name = "Choppers",
-                amount = uiState.uraniumWorker
-            )
-        )
+fun Stats(materials: SnapshotStateList<IValue>) {
     LazyColumn {
-        items(stats) { stat ->
-            MaterialStat(name = stat.name, amount = stat.amount)
+        items(materials.size) {
+            materials.forEach { material ->
+                MaterialStat(name = material.name, amount = material.amount)
+            }
         }
     }
 }
@@ -144,18 +132,14 @@ fun MaterialStat(name: String, amount: Number) {
 }
 
 @Composable
-fun MinedMaterials(name: String, uiState: GameUiState) {
+fun MinedMaterials(material: IValue) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (uiState.fuel.toDouble() >= 0.0) {
+        if (material.amount >= 0.0) {
             Icon(Icons.Default.Info, contentDescription = null)
             Text(
-                text = "${name}:",
-                color = MaterialTheme.colors.primaryVariant
-            )
-            Text(
-                text = uiState.trees.toString(),
+                text = "${material.name}: ${material.amount}",
                 color = MaterialTheme.colors.primaryVariant
             )
         }
@@ -170,8 +154,8 @@ fun MinedMaterials(name: String, uiState: GameUiState) {
 fun DefaultPreview() {
     Surface {
         Column {
-            val uiState = GameUiState(fuel = 3)
-            Stats(uiState)
+            val uiState = GameUiState(lastTick = Date())
+            Stats(uiState.materials)
         }
     }
 

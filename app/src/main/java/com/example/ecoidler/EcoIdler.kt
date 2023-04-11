@@ -40,7 +40,7 @@ fun EcoIdler() {
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = "newGame",
+                startDestination = Screens.Home.route,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screens.Home.route) {
