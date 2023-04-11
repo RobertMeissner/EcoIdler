@@ -41,13 +41,10 @@ fun GameScreen(
             name = "score",
             amount = viewModel.score()
         )
-        uiState.materials.forEach { material ->
-            Text(text = "${material.name}: ${material.amount}. Workers: ${material.workers}")
-        }
-        uiState.materials.forEach { material ->
-            MaterialPill(value = material)
-        }
+        Stats(materials = uiState.buildings)
         Stats(materials = uiState.materials)
+        uiState.materials.forEach { material -> MaterialPill(value = material) }
+        uiState.buildings.forEach { material -> MaterialPill(value = material) }
     }
 }
 
@@ -74,7 +71,7 @@ private fun MaterialPill(
         MinedMaterials(material = value)
         WorkerButton(
             icon = Icons.Default.Face,
-            onClick = { value.addWorker() })
+            onClick = { value.increase() })
     }
 }
 
@@ -113,7 +110,11 @@ fun Stats(materials: SnapshotStateList<IValue>) {
     LazyColumn {
         items(materials.size) {
             materials.forEach { material ->
-                MaterialStat(name = material.name, amount = material.amount)
+                MaterialStat(
+                    name = material.name.lowercase(),
+                    amount = material.amount,
+                    incrementer = material.increment.toInt()
+                )
             }
         }
     }
@@ -121,12 +122,12 @@ fun Stats(materials: SnapshotStateList<IValue>) {
 
 
 @Composable
-fun MaterialStat(name: String, amount: Number) {
+fun MaterialStat(name: String, amount: Number, incrementer: Number) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (amount.toDouble() >= 0.0) {
-            Text(text = "$name: $amount")
+            Text(text = "$name: $amount/$incrementer")
         }
     }
 }

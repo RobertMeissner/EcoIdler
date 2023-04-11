@@ -19,43 +19,52 @@ import java.util.*
 
 data class GameUiState(
     var lastTick: Date,
-    var materials: SnapshotStateList<IValue> = mutableStateListOf()
+    var materials: SnapshotStateList<IValue> = mutableStateListOf(),
+    var buildings: SnapshotStateList<IValue> = mutableStateListOf()
 
 )
 
 interface IValue {
-    fun addWorker()
-    fun mine()
+    fun increase()
+    fun tick()
 
     var amount: Float
-    var workers: Float
+    var increment: Float
     var name: String
+
 }
 
-open class Value(valueName: String) : IValue {
+enum class ValueName(name: String) {
+    WOOD("wood"),
+    COAL("coal"),
+    HOUSE("house");
+
+    override fun toString() = this.name
+}
+
+open class Value(valueName: ValueName) : IValue {
     override var amount: Float = 0F
-    override var workers: Float = 0F
+    override var increment: Float = 0F
     final override var name: String = ""
 
     init {
-        name = valueName
+        name = valueName.toString()
     }
 
 
-    override fun addWorker() {
-        workers += 1
-        println("${name}: $workers")
+    override fun increase() {
+        increment += 1
     }
 
-    override fun mine() {
+    override fun tick() {
         val timeDiff = 1F
-        val mined = timeDiff * workers
+        val mined = timeDiff * increment
         amount += mined
-        println("${name}: $amount by $workers")
     }
 
-    object Wood : Value("wood")
-    object Coal : Value("coal")
+    object Wood : Value(ValueName.WOOD)
+    object Coal : Value(ValueName.COAL)
+    object House : Value(ValueName.HOUSE)
 }
 
 
@@ -68,7 +77,8 @@ class DataViewModel() : ViewModel(), KoinComponent {
     private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
 
     private fun tickStats() {
-        _uiState.value.materials.forEach { material -> material.mine() }
+        _uiState.value.materials.forEach { material -> material.tick() }
+        _uiState.value.buildings.forEach { buildings -> buildings.tick() }
 
         _uiState.update { state ->
             state.copy(
@@ -93,7 +103,8 @@ class DataViewModel() : ViewModel(), KoinComponent {
     private fun reset() {
         _uiState.update { state ->
             state.copy(
-                materials = mutableStateListOf(Value.Wood, Value.Coal)
+                materials = mutableStateListOf(Value.Wood, Value.Coal),
+                buildings = mutableStateListOf(Value.House)
             )
         }
     }
