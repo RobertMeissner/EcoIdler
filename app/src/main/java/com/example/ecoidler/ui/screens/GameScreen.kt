@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -106,7 +105,7 @@ fun MaterialCounterPreview() {
 }
 
 @Composable
-fun Stats(materials: SnapshotStateList<IValue>) {
+fun Stats(materials: MutableList<IValue>) {
     LazyColumn {
         items(materials.size) {
             materials.forEach { material ->

@@ -77,8 +77,8 @@ class DataViewModel() : ViewModel(), KoinComponent {
     private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
 
     private fun tickStats() {
-        _uiState.value.materials.forEach { material -> material.tick() }
-        _uiState.value.buildings.forEach { buildings -> buildings.tick() }
+        _uiState.value.materials.forEach { it.tick() }
+        _uiState.value.buildings.forEach { it.tick() }
 
         _uiState.update { state ->
             state.copy(
