@@ -52,12 +52,15 @@ fun GameScreen(
 @Composable
 fun MaterialPillPreview() {
     val costs = listOf(Cost(ValueName.WOOD, 10F), Cost(ValueName.COAL, 3F))
-    MaterialPill(Value(ValueName.WOOD, costs = costs))
+    Column {
+        MaterialPill(Value(ValueName.WOOD, costs = costs))
+        MaterialPill(Value(ValueName.WOOD, costs = costs), false)
+    }
 }
 
 @Composable
 private fun MaterialPill(
-    value: IValue
+    value: IValue, isAffordable: Boolean = true
 ) {
     val costs = value.costs
     Row(
@@ -67,6 +70,7 @@ private fun MaterialPill(
         verticalAlignment = Alignment.CenterVertically
     ) {
         MinedMaterials(material = value)
+        if (isAffordable)
         WorkerButton(
             icon = Icons.Default.Face,
             onClick = { value.increase() })

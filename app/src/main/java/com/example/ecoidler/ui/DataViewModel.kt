@@ -119,4 +119,9 @@ class DataViewModel() : ViewModel(), KoinComponent {
         tickStats()
         if (lost()) navController.navigate(Screens.Lost.route)
     }
+
+    fun isAffordable(value: IValue): Boolean {
+        // TODO: Implement
+        return false
+    }
 }
