@@ -28,7 +28,7 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun EcoIdlerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun EcoIdlerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit){
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {

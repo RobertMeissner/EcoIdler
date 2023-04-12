@@ -1,7 +1,8 @@
 package com.example.ecoidler.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.ecoidler.data.FakeDatabase
@@ -12,35 +13,82 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import java.util.*
 
 
 data class GameUiState(
-    val wood: Int = 0,
-    val woodGatherers: Int = 0,
-    val woodChoppers: Int = 0,
-    val trees: Int = 0,
+    var lastTick: Date,
+    var materials: SnapshotStateList<IValue> = mutableStateListOf(),
+    var buildings: SnapshotStateList<IValue> = mutableStateListOf()
+
 )
 
-class DataViewModel(application: Application) : AndroidViewModel(application) {
-    private val _uiState = MutableStateFlow(GameUiState())
+interface IValue {
+    fun increase()
+    fun tick()
+
+    var amount: Float
+    var increment: Float
+    var name: String
+
+}
+
+enum class ValueName(name: String) {
+    WOOD("wood"),
+    COAL("coal"),
+    HOUSE("house");
+
+    override fun toString() = this.name
+}
+
+open class Value(valueName: ValueName) : IValue {
+    override var amount: Float = 0F
+    override var increment: Float = 0F
+    final override var name: String = ""
+
+    init {
+        name = valueName.toString()
+    }
+
+
+    override fun increase() {
+        increment += 1
+    }
+
+    override fun tick() {
+        val timeDiff = 1F
+        val mined = timeDiff * increment
+        amount += mined
+    }
+
+    object Wood : Value(ValueName.WOOD)
+    object Coal : Value(ValueName.COAL)
+    object House : Value(ValueName.HOUSE)
+}
+
+
+class DataViewModel() : ViewModel(), KoinComponent {
+    private val _uiState = MutableStateFlow(GameUiState(lastTick = Date()))
     var uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
 
     // Todo: Redundant for now but important for persisting
     private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
+
     private fun tickStats() {
-        val choppedWood = _uiState.value.woodGatherers + 10 * _uiState.value.woodChoppers
-        // Todo connect _wood better with repository wood
-        _uiState.update { state -> state.copy(wood = _uiState.value.wood + choppedWood) }
-        _uiState.update { state -> state.copy(trees = _uiState.value.trees - _uiState.value.woodChoppers) }
+        _uiState.value.materials.forEach { it.tick() }
+        _uiState.value.buildings.forEach { it.tick() }
+
+        _uiState.update { state ->
+            state.copy(
+                lastTick = Date()
+            )
+        }
     }
 
-    fun addWoodGatherer() =
-        _uiState.update { state -> state.copy(woodGatherers = state.woodGatherers + 1) }
 
-    fun addWoodChoppers() =
-        _uiState.update { state -> state.copy(woodChoppers = state.woodChoppers + 1) }
-
-    fun lost() = uiState.value.trees <= 0
+    fun lost() = uiState.value.materials[0].amount >= 10
 
     fun load(navController: NavHostController) = effect {
         reset()
@@ -53,14 +101,16 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun reset() {
-        _uiState.update { state -> state.copy(wood = 0) }
-        _uiState.update { state -> state.copy(woodGatherers = 0) }
-        _uiState.update { state -> state.copy(woodChoppers = 0) }
-        _uiState.update { state -> state.copy(trees = 100) }
+        _uiState.update { state ->
+            state.copy(
+                materials = mutableStateListOf(Value.Wood, Value.Coal),
+                buildings = mutableStateListOf(Value.House)
+            )
+        }
     }
 
     fun score(): Int {
-        return _uiState.value.trees * 100 + _uiState.value.wood
+        return _uiState.value.materials[0].amount.toInt()
     }
 
     fun tick(navController: NavHostController) {
