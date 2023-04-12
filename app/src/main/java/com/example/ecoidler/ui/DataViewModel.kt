@@ -30,7 +30,8 @@ interface IValue {
 
     var amount: Float
     var increment: Float
-    var name: String
+    var name: ValueName
+    var costs: List<Cost>
 
 }
 
@@ -42,15 +43,16 @@ enum class ValueName(name: String) {
     override fun toString() = this.name
 }
 
-open class Value(valueName: ValueName) : IValue {
+data class Cost(
+    var name: ValueName,
+    var amount: Float
+)
+
+
+open class Value(valueName: ValueName, override var costs: List<Cost> = listOf()) : IValue {
     override var amount: Float = 0F
     override var increment: Float = 0F
-    final override var name: String = ""
-
-    init {
-        name = valueName.toString()
-    }
-
+    final override var name: ValueName = valueName
 
     override fun increase() {
         increment += 1
@@ -64,7 +66,7 @@ open class Value(valueName: ValueName) : IValue {
 
     object Wood : Value(ValueName.WOOD)
     object Coal : Value(ValueName.COAL)
-    object House : Value(ValueName.HOUSE)
+    object House : Value(ValueName.HOUSE, listOf(Cost(ValueName.WOOD, 3F)))
 }
 
 

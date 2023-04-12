@@ -18,10 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecoidler.ui.DataViewModel
-import com.example.ecoidler.ui.GameUiState
-import com.example.ecoidler.ui.IValue
-import com.example.ecoidler.ui.Value
+import com.example.ecoidler.ui.*
 import java.util.*
 
 
@@ -54,13 +51,15 @@ fun GameScreen(
 )
 @Composable
 fun MaterialPillPreview() {
-    MaterialPill(Value.Wood)
+    val costs = listOf(Cost(ValueName.WOOD, 10F), Cost(ValueName.COAL, 3F))
+    MaterialPill(Value(ValueName.WOOD, costs = costs))
 }
 
 @Composable
 private fun MaterialPill(
     value: IValue
 ) {
+    val costs = value.costs
     Row(
         modifier = Modifier
             .padding(5.dp)
@@ -71,6 +70,9 @@ private fun MaterialPill(
         WorkerButton(
             icon = Icons.Default.Face,
             onClick = { value.increase() })
+        Column {
+            costs.forEach { Text("${it.name}:${it.amount}") }
+        }
     }
 }
 
@@ -110,7 +112,7 @@ fun Stats(materials: MutableList<IValue>) {
         items(materials.size) {
             materials.forEach { material ->
                 MaterialStat(
-                    name = material.name.lowercase(),
+                    name = material.name.toString().lowercase(),
                     amount = material.amount,
                     incrementer = material.increment.toInt()
                 )
