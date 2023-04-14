@@ -26,14 +26,13 @@ internal class DataViewModelTest {
     }
 
     @After
-    fun stopKoinAfterTest() = stopKoin()
+    fun stopKoinAfterTest(): Unit = stopKoin()
 
     @Test
     fun isAffordableTest() {
 
         val dummyValueName = ValueName.HOUSE
         val viewModel = DataViewModel()
-//        viewModel.uiState.value = GameUiState()
         assertTrue(viewModel.isAffordable(dummyValueName))
     }
 
