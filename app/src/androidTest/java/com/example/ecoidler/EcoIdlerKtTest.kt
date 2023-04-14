@@ -17,21 +17,18 @@ internal class EcoIdlerKtTest {
     @Test
     fun materialStatTestZeroAmount() {
         composeTestRule.setContent {
-            MaterialStat(name = "iron", amount = 0)
+            MaterialStat(name = "iron", amount = 0, incrementer = 3)
         }
-        composeTestRule.onNode(hasText("iron mined:")).assertIsDisplayed()
-        composeTestRule.onNode(hasText("0")).assertIsDisplayed()
-        composeTestRule.onNode(hasText("100.0")).assertIsDisplayed()
-        composeTestRule.onNode(hasText("wood mined:")).assertDoesNotExist()
+        composeTestRule.onNode(hasText("iron: 0/3")).assertIsDisplayed()
 
     }
 
     @Test
     fun materialStatTestIllegalAmount() {
         composeTestRule.setContent {
-            MaterialStat(name = "iron", amount = -1)
+            MaterialStat(name = "iron", amount = -1, incrementer = 3)
         }
-        composeTestRule.onNode(hasText("iron mined:")).assertDoesNotExist()
+        composeTestRule.onNode(hasText("iron: -1/3")).assertDoesNotExist()
 
     }
 }

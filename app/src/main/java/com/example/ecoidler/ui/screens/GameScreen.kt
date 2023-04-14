@@ -71,9 +71,9 @@ private fun MaterialPill(
     ) {
         MinedMaterials(material = value)
         if (isAffordable)
-        WorkerButton(
-            icon = Icons.Default.Face,
-            onClick = { value.increase() })
+            WorkerButton(
+                icon = Icons.Default.Face,
+                onClick = { value.increase() })
         Column {
             costs.forEach { Text("${it.name}:${it.amount}") }
         }

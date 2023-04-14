@@ -5,8 +5,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.ecoidler.data.FakeDatabase
-import com.example.ecoidler.data.Repository
 import com.example.ecoidler.ui.navigation.Screens
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,7 +74,7 @@ class DataViewModel() : ViewModel(), KoinComponent {
 
 
     // Todo: Redundant for now but important for persisting
-    private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
+//    private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
 
     private fun tickStats() {
         _uiState.value.materials.forEach { it.tick() }
@@ -120,7 +118,7 @@ class DataViewModel() : ViewModel(), KoinComponent {
         if (lost()) navController.navigate(Screens.Lost.route)
     }
 
-    fun isAffordable(value: IValue): Boolean {
+    fun isAffordable(valueName: ValueName): Boolean {
         // TODO: Implement
         return false
     }
