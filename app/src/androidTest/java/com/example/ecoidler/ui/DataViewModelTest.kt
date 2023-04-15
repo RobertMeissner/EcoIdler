@@ -11,6 +11,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.context.GlobalContext.stopKoin
+import org.koin.java.KoinJavaComponent.inject
 
 
 @RunWith(JUnit4::class)
@@ -18,6 +19,7 @@ internal class DataViewModelTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    private val viewModel: DataViewModel by inject(DataViewModel::class.java)
     @Before
     fun startKoinForTest() {
         startKoin {
@@ -30,9 +32,8 @@ internal class DataViewModelTest {
 
     @Test
     fun isAffordableTest() {
-
         val dummyValueName = ValueName.HOUSE
-        val viewModel = DataViewModel()
+        println(viewModel.score())
         assertTrue(viewModel.isAffordable(dummyValueName))
     }
 
