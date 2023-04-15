@@ -37,7 +37,7 @@ fun TopAppBarCompose(navController: NavHostController, viewModel: DataViewModel)
                 Icon(Icons.Default.Favorite, contentDescription = null)
             }
             IconButton(onClick = {
-                if (!viewModel.lost()) navController.navigate(Screens.Home.route)
+                if (!viewModel.hasLost()) navController.navigate(Screens.Home.route)
                 else navController.navigate(Screens.NewGame.route)
             }) {
                 Icon(Icons.Default.Home, contentDescription = null)

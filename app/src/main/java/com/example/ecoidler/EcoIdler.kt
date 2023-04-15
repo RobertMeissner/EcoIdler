@@ -27,7 +27,7 @@ fun EcoIdler() {
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState()
     val viewModel = getViewModel<DataViewModel> { parametersOf() }
-    viewModel.load(navController)
+    viewModel.load()
 
     StartLoop(viewModel, navController)
     Surface(
@@ -82,7 +82,7 @@ private fun StoryScreen(
         Greeting(stringResource(R.string.ai_name))
         Text(stringResource(story_id))
         Button(onClick = {
-            viewModel.load(navController)
+            viewModel.load()
             navController.navigate(Screens.Home.route)
         }) {
             Text("Begin.")
@@ -116,7 +116,7 @@ private fun NewGameScreen(
         dismissButton = {},
         confirmButton = {
             TextButton(onClick = {
-                viewModel.load(navController)
+                viewModel.load()
                 navController.navigate(Screens.Intro.route)
             }) {
                 Text("New Game")
@@ -131,7 +131,10 @@ private fun StartLoop(
 ) {
     LaunchedEffect(Unit) {
         while (true) {
-            if (!viewModel.lost()) viewModel.tick(navController)
+            if (!viewModel.uiState.value.lost) {
+                viewModel.tick()
+                if (viewModel.hasLost()) navController.navigate(Screens.Lost.route)
+            }
             delay(1000)
         }
     }

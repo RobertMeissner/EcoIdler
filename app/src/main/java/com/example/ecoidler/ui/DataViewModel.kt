@@ -4,8 +4,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.example.ecoidler.ui.navigation.Screens
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +16,8 @@ import java.util.*
 data class GameUiState(
     var lastTick: Date,
     var materials: SnapshotStateList<IValue> = mutableStateListOf(),
-    var buildings: SnapshotStateList<IValue> = mutableStateListOf()
+    var buildings: SnapshotStateList<IValue> = mutableStateListOf(),
+    var lost: Boolean = false
 
 )
 
@@ -88,12 +87,19 @@ class DataViewModel() : ViewModel(), KoinComponent {
     }
 
 
-    fun lost() = uiState.value.materials[0].amount >= 10
+    fun hasLost(): Boolean{
+        _uiState.update  { state ->
+            state.copy(
+                lost = uiState.value.materials[0].amount >= 10
+            )
+         }
+        return uiState.value.lost
+    }
 
-    fun load(navController: NavHostController) = effect {
+    fun load() = effect {
         reset()
         // Todo: Resolve initial load from disk without ticking, but update values according to repository values
-        tick(navController)
+        tick()
     }
 
     private fun effect(block: suspend () -> Unit) {
@@ -104,7 +110,8 @@ class DataViewModel() : ViewModel(), KoinComponent {
         _uiState.update { state ->
             state.copy(
                 materials = mutableStateListOf(Value.Wood, Value.Coal),
-                buildings = mutableStateListOf(Value.House)
+                buildings = mutableStateListOf(Value.House),
+                lost = false
             )
         }
     }
@@ -113,9 +120,8 @@ class DataViewModel() : ViewModel(), KoinComponent {
         return _uiState.value.materials[0].amount.toInt()
     }
 
-    fun tick(navController: NavHostController) {
+    fun tick() {
         tickStats()
-        if (lost()) navController.navigate(Screens.Lost.route)
     }
 
     fun isAffordable(valueName: ValueName): Boolean {

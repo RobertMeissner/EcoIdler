@@ -33,6 +33,7 @@ internal class DataViewModelTest {
     @Test
     fun isAffordableTest() {
         val dummyValueName = ValueName.HOUSE
+        viewModel.load()
         println(viewModel.score())
         assertTrue(viewModel.isAffordable(dummyValueName))
     }
