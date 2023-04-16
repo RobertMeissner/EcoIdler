@@ -33,9 +33,8 @@ internal class DataViewModelTest {
     @Test
     fun isAffordableTest() {
         viewModel.load()
-        assertTrue(viewModel.isAffordable(ValueName.HOUSE))
-        // TODO: Implement
-        assertTrue(viewModel.isAffordable(ValueName.WOOD))
+        assertTrue(!viewModel.isAffordable(Value.House))
+        assertTrue(viewModel.isAffordable(Value.Wood))
     }
 
 }

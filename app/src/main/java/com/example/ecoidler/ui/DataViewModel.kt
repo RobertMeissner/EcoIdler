@@ -128,10 +128,24 @@ class DataViewModel() : ViewModel(), KoinComponent {
         return list.filter { it.name.name == name }
     }
 
-    fun isAffordable(valueName: ValueName): Boolean {
-        val filteredList = filterByName(_uiState.value.materials, valueName.toString())
-        if (filteredList.isEmpty())
-            return true
-        return false
+    fun isAffordable(value: IValue): Boolean {
+        if (value.costs.isEmpty()) return true
+
+        value.costs.forEach{cost ->
+
+            val neededMaterials = filterByName(_uiState.value.materials + _uiState.value.buildings, cost.name.name)
+            if (neededMaterials.isEmpty())
+                // yet unknown costs
+                return false
+
+            neededMaterials.forEach{ it ->
+                if (it.amount < cost.amount)
+                    return false
+                return true
+            }
+            return false
+        }
+
+        return true
     }
 }

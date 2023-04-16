@@ -39,8 +39,18 @@ fun GameScreen(
         )
         Stats(materials = uiState.buildings)
         Stats(materials = uiState.materials)
-        uiState.materials.forEach { material -> MaterialPill(value = material) }
-        uiState.buildings.forEach { material -> MaterialPill(value = material) }
+        uiState.materials.forEach {
+            MaterialPill(
+                value = it,
+                isAffordable = viewModel.isAffordable(it)
+            )
+        }
+        uiState.buildings.forEach {
+            MaterialPill(
+                value = it,
+                isAffordable = viewModel.isAffordable(it)
+            )
+        }
     }
 }
 
