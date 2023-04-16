@@ -87,16 +87,16 @@ class DataViewModel() : ViewModel(), KoinComponent {
     }
 
 
-    fun hasLost(): Boolean{
-        _uiState.update  { state ->
+    fun hasLost(): Boolean {
+        _uiState.update { state ->
             state.copy(
                 lost = uiState.value.materials[0].amount >= 10
             )
-         }
+        }
         return uiState.value.lost
     }
 
-    fun load() = effect {
+    fun load() {
         reset()
         // Todo: Resolve initial load from disk without ticking, but update values according to repository values
         tick()
@@ -124,8 +124,14 @@ class DataViewModel() : ViewModel(), KoinComponent {
         tickStats()
     }
 
+    fun filterByName(list: List<IValue>, name: String): List<IValue> {
+        return list.filter { it.name.name == name }
+    }
+
     fun isAffordable(valueName: ValueName): Boolean {
-        // TODO: Implement
+        val filteredList = filterByName(_uiState.value.materials, valueName.toString())
+        if (filteredList.isEmpty())
+            return true
         return false
     }
 }
