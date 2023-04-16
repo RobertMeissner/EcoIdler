@@ -15,8 +15,7 @@ import java.util.*
 
 data class GameUiState(
     var lastTick: Date,
-    var materials: SnapshotStateList<IValue> = mutableStateListOf(),
-    var buildings: SnapshotStateList<IValue> = mutableStateListOf(),
+    var values: SnapshotStateList<IValue> = mutableStateListOf(),
     var lost: Boolean = false
 
 )
@@ -27,29 +26,35 @@ interface IValue {
 
     var amount: Float
     var increment: Float
-    var name: ValueName
+    var meta: ValueMeta
     var costs: List<Cost>
 
 }
 
-enum class ValueName(name: String) {
-    WOOD("wood"),
-    COAL("coal"),
-    HOUSE("house");
+enum class ValueType{
+    MATERIAL,
+    BUILDING
+}
+
+sealed class ValueMeta(val name: String,val type: ValueType) {
+    object WOOD: ValueMeta("wood", type=ValueType.MATERIAL)
+    object COAL: ValueMeta("coal", ValueType.MATERIAL)
+    object HOUSE: ValueMeta ("house", ValueType.BUILDING)
+    object HEATER: ValueMeta ("heater", ValueType.BUILDING)
 
     override fun toString() = this.name
 }
 
 data class Cost(
-    var name: ValueName,
+    var name: ValueMeta,
     var amount: Float
 )
 
 
-open class Value(valueName: ValueName, override var costs: List<Cost> = listOf()) : IValue {
+open class Value(valueName: ValueMeta, override var costs: List<Cost> = listOf()) : IValue {
     override var amount: Float = 0F
     override var increment: Float = 0F
-    final override var name: ValueName = valueName
+    final override var meta: ValueMeta = valueName
 
     override fun increase() {
         increment += 1
@@ -61,9 +66,11 @@ open class Value(valueName: ValueName, override var costs: List<Cost> = listOf()
         amount += mined
     }
 
-    object Wood : Value(ValueName.WOOD)
-    object Coal : Value(ValueName.COAL)
-    object House : Value(ValueName.HOUSE, listOf(Cost(ValueName.WOOD, 3F)))
+    object Wood : Value(ValueMeta.WOOD)
+    object Coal : Value(ValueMeta.COAL)
+    object House : Value(ValueMeta.HOUSE, listOf(Cost(ValueMeta.WOOD, 3F)))
+    object Heater :
+        Value(ValueMeta.HEATER, listOf(Cost(ValueMeta.WOOD, 3F), Cost(ValueMeta.COAL, 3F)))
 }
 
 
@@ -76,8 +83,7 @@ class DataViewModel() : ViewModel(), KoinComponent {
 //    private var repository: Repository = Repository.getInstance(FakeDatabase.getInstance().fakeDao)
 
     private fun tickStats() {
-        _uiState.value.materials.forEach { it.tick() }
-        _uiState.value.buildings.forEach { it.tick() }
+        _uiState.value.values.forEach { it.tick() }
 
         _uiState.update { state ->
             state.copy(
@@ -90,7 +96,8 @@ class DataViewModel() : ViewModel(), KoinComponent {
     fun hasLost(): Boolean {
         _uiState.update { state ->
             state.copy(
-                lost = uiState.value.materials[0].amount >= 10
+                // TODO: Add logic
+                lost = uiState.value.values[0].amount >= 100
             )
         }
         return uiState.value.lost
@@ -109,15 +116,15 @@ class DataViewModel() : ViewModel(), KoinComponent {
     private fun reset() {
         _uiState.update { state ->
             state.copy(
-                materials = mutableStateListOf(Value.Wood, Value.Coal),
-                buildings = mutableStateListOf(Value.House),
+                values = mutableStateListOf(Value.Wood, Value.Coal, Value.House, Value.Heater),
                 lost = false
             )
         }
     }
 
     fun score(): Int {
-        return _uiState.value.materials[0].amount.toInt()
+        // TODO: Add logic
+        return _uiState.value.values[0].amount.toInt()
     }
 
     fun tick() {
@@ -125,7 +132,7 @@ class DataViewModel() : ViewModel(), KoinComponent {
     }
 
     private fun filterByName(list: List<IValue>, name: String): List<IValue> {
-        return list.filter { it.name.name == name }
+        return list.filter { it.meta.name == name }
     }
 
     fun isAffordable(value: IValue): Boolean {
@@ -134,7 +141,7 @@ class DataViewModel() : ViewModel(), KoinComponent {
         for (cost in value.costs) {
 
             val neededMaterials =
-                filterByName(_uiState.value.materials + _uiState.value.buildings, cost.name.name)
+                filterByName(_uiState.value.values, cost.name.name)
             if (neededMaterials.isEmpty())
             // yet unknown costs
                 return false

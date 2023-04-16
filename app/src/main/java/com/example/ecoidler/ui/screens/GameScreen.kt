@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,15 +38,8 @@ fun GameScreen(
             name = "score",
             amount = viewModel.score()
         )
-        Stats(materials = uiState.buildings)
-        Stats(materials = uiState.materials)
-        uiState.materials.forEach {
-            MaterialPill(
-                value = it,
-                isAffordable = viewModel.isAffordable(it)
-            )
-        }
-        uiState.buildings.forEach {
+        Stats(materials = uiState.values)
+        uiState.values.forEach {
             MaterialPill(
                 value = it,
                 isAffordable = viewModel.isAffordable(it)
@@ -61,10 +55,10 @@ fun GameScreen(
 )
 @Composable
 fun MaterialPillPreview() {
-    val costs = listOf(Cost(ValueName.WOOD, 10F), Cost(ValueName.COAL, 3F))
+    val costs = listOf(Cost(ValueMeta.WOOD, 10F), Cost(ValueMeta.COAL, 3F))
     Column {
-        MaterialPill(Value(ValueName.WOOD, costs = costs))
-        MaterialPill(Value(ValueName.WOOD, costs = costs), false)
+        MaterialPill(Value(ValueMeta.WOOD, costs = costs))
+        MaterialPill(Value(ValueMeta.WOOD, costs = costs), false)
     }
 }
 
@@ -82,7 +76,7 @@ private fun MaterialPill(
         MinedMaterials(material = value)
         if (isAffordable)
             WorkerButton(
-                icon = Icons.Default.Face,
+                icon = if (value.meta.type == ValueType.MATERIAL) Icons.Default.Face else Icons.Default.Home,
                 onClick = { value.increase() })
         Column {
             costs.forEach { Text("${it.name}:${it.amount}") }
@@ -124,13 +118,11 @@ fun MaterialCounterPreview() {
 fun Stats(materials: MutableList<IValue>) {
     LazyColumn {
         items(materials.size) {
-            materials.forEach { material ->
-                MaterialStat(
-                    name = material.name.toString().lowercase(),
-                    amount = material.amount,
-                    incrementer = material.increment.toInt()
-                )
-            }
+            MaterialStat(
+                name = materials[it].meta.toString().lowercase(),
+                amount = materials[it].amount,
+                incrementer = materials[it].increment.toInt()
+            )
         }
     }
 }
@@ -155,7 +147,7 @@ fun MinedMaterials(material: IValue) {
         if (material.amount >= 0.0) {
             Icon(Icons.Default.Info, contentDescription = null)
             Text(
-                text = "${material.name}: ${material.amount}",
+                text = "${material.meta}: ${material.amount}",
                 color = MaterialTheme.colors.primaryVariant
             )
         }
@@ -171,7 +163,7 @@ fun DefaultPreview() {
     Surface {
         Column {
             val uiState = GameUiState(lastTick = Date())
-            Stats(uiState.materials)
+            Stats(uiState.values)
         }
     }
 
