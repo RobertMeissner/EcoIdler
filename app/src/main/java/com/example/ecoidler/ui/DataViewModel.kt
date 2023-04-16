@@ -124,28 +124,30 @@ class DataViewModel() : ViewModel(), KoinComponent {
         tickStats()
     }
 
-    fun filterByName(list: List<IValue>, name: String): List<IValue> {
+    private fun filterByName(list: List<IValue>, name: String): List<IValue> {
         return list.filter { it.name.name == name }
     }
 
     fun isAffordable(value: IValue): Boolean {
         if (value.costs.isEmpty()) return true
 
-        value.costs.forEach{cost ->
+        for (cost in value.costs) {
 
-            val neededMaterials = filterByName(_uiState.value.materials + _uiState.value.buildings, cost.name.name)
+            val neededMaterials =
+                filterByName(_uiState.value.materials + _uiState.value.buildings, cost.name.name)
             if (neededMaterials.isEmpty())
-                // yet unknown costs
+            // yet unknown costs
                 return false
 
-            neededMaterials.forEach{ it ->
-                if (it.amount < cost.amount)
+            for (material in neededMaterials) {
+                if (material.amount < cost.amount) {
                     return false
-                return true
+                }
             }
-            return false
         }
 
         return true
     }
+
+
 }
