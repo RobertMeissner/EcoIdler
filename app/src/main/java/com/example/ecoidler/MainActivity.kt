@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateStats() {
         // update view
-        woodStats.text = getString(
+        woodStats.text = getStworing(
             R.string.stats_line,
             viewModel.getWoodGatherers().value,
             viewModel.getWoodChoppers().value,
